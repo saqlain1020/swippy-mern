@@ -1,25 +1,41 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import "./App.css";
+import { setUpNotifications } from "reapop";
+import { Container, ThemeProvider } from "@material-ui/core";
+import theme from "./Theme/Theme";
+import Routes from "./Routes/Routes";
+import { connect } from "react-redux";
+import { authListener } from "src/Redux/user/userActions";
+import Loading from "./Components/Loading/Loading";
 
-function App() {
+function App({ authListener }) {
+  setUpNotifications({
+    defaultProps: {
+      position: "top-right",
+      dismissible: true,
+      showDismissButton: true,
+      dismissAfter: 5000,
+    },
+  });
+
+  React.useEffect(() => {
+    authListener();
+  }, [authListener]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <ThemeProvider theme={theme}>
+        <Container maxWidth="xl" disableGutters>
+          <Loading/>
+          <Routes />
+        </Container>
+      </ThemeProvider>
+    </>
   );
 }
 
-export default App;
+const actions = {
+  authListener,
+};
+
+export default connect(null, actions)(App);
