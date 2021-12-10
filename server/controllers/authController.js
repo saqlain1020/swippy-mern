@@ -10,7 +10,7 @@ const signJWT = (userId) => {
 };
 
 const createAndSendToken = (user, res) => {
-  var token = signJWT(user.userId);
+  var token = signJWT(user._id);
   res.cookie("jwt", token, {
     expires: new Date(
       Date.now() + parseInt(process.env.COOKIE_EXPIRES_IN) * 24 * 60 * 60 * 1000
@@ -77,8 +77,7 @@ exports.login = async (req, res) => {
     }
 
     // bson to json
-    let {password : p, ...profile} = user.toJSON();
-
+    let { password: p, ...profile } = user.toJSON();
     createAndSendToken(profile, res);
   } catch (error) {
     res.status(404).json({
@@ -129,6 +128,17 @@ exports.protect = async (req, res, next) => {
     }
     req.user = user;
     next();
+  } catch (error) {
+    return res.status(404).json({
+      status: "error",
+      error: error.message,
+    });
+  }
+};
+
+exports.getUser = async (req, res) => {
+  try {
+    res.status(200).json(req.user);
   } catch (error) {
     return res.status(404).json({
       status: "error",
