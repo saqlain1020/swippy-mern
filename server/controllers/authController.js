@@ -129,7 +129,7 @@ exports.protect = async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
-    return res.status(404).json({
+     res.status(404).json({
       status: "error",
       error: error.message,
     });
@@ -140,7 +140,24 @@ exports.getUser = async (req, res) => {
   try {
     res.status(200).json(req.user);
   } catch (error) {
-    return res.status(404).json({
+     res.status(404).json({
+      status: "error",
+      error: error.message,
+    });
+  }
+};
+
+exports.checkUsernameExist = async (req, res) => {
+  try {
+    let username = req.query.username.toLowerCase();
+    let user = await User.findOne({ username });
+    console.log(user);
+    console.log(username);
+    res.status(200).json({
+      isAvailable: user ? false : true,
+    });
+  } catch (error) {
+     res.status(404).json({
       status: "error",
       error: error.message,
     });

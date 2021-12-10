@@ -5,6 +5,7 @@ const xss = require("xss-clean"); //for XSS attack (remove script tags)
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const authRouter = require("./routes/authRouter");
+const profileRouter = require("./routes/profileRouter");
 const morgan = require("morgan");
 
 const limiter = rateLimit({
@@ -19,6 +20,8 @@ const app = express();
 app.use(cors({ origin: true, credentials: true }));
 //serving static content
 app.use(express.static("public"));
+app.use('/uploads', express.static('uploads'));
+
 //middlewares
 app.use(limiter);
 
@@ -31,5 +34,6 @@ app.use(morgan("dev"));
 //routers
 // app.use("/api/v1/arts", artRouter);
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/profile", profileRouter);
 
 module.exports = app;

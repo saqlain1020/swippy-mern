@@ -7,8 +7,12 @@ const userSchema = new mongoose.Schema({
     type: String,
     unique: true,
     required: [true, "user name is required!"],
+    immutable: true,
   },
   name: {
+    type: String,
+  },
+  description: {
     type: String,
   },
   scanCount: {
@@ -30,6 +34,10 @@ const userSchema = new mongoose.Schema({
     required: true,
     minLength: 8,
     select: false, //security
+  },
+  tags: {
+    type: [String],
+    default: [],
   },
   passwordChangedAt: Date,
   passwordResetToken: String,
@@ -62,6 +70,7 @@ userSchema.methods.passwordResetTokenGenerator = function () {
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password") && !this.isNew) return next();
   this.passwordChangedAt = Date.now() - 1000;
+  this.username = this.username.toLowerCase();
   next();
 });
 
