@@ -18,6 +18,10 @@ const linkSchema = new mongoose.Schema(
       ref: "User",
       required: [true, "User id is required!"],
     },
+    isPrimary: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
