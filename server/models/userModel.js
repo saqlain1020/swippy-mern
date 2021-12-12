@@ -2,47 +2,59 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 
-const userSchema = new mongoose.Schema({
-  username: {
-    type: String,
-    unique: true,
-    required: [true, "user name is required!"],
-    immutable: true,
+const userSchema = new mongoose.Schema(
+  {
+    username: {
+      type: String,
+      unique: true,
+      required: [true, "user name is required!"],
+      immutable: true,
+    },
+    name: {
+      type: String,
+    },
+    description: {
+      type: String,
+    },
+    scanCount: {
+      type: Number,
+      default: 0,
+    },
+    email: {
+      type: String,
+      unique: true, //indexing
+      required: true, //TODO: check email pattern //validation
+      lower: true, // user@gmail.com & User@gmail.com //modification
+    },
+    displayPicture: {
+      type: String,
+      default: "default.png",
+    },
+    direct: {
+      type: Boolean,
+      default: false,
+    },
+    password: {
+      type: String,
+      required: true,
+      minLength: 8,
+      select: false, //security
+    },
+    tags: {
+      type: [String],
+      default: [],
+    },
+    passwordChangedAt: Date,
+    passwordResetToken: String,
+    passwordResetTokenExpiresAt: Date,
   },
-  name: {
-    type: String,
-  },
-  description: {
-    type: String,
-  },
-  scanCount: {
-    type: Number,
-    default: 0,
-  },
-  email: {
-    type: String,
-    unique: true, //indexing
-    required: true, //TODO: check email pattern //validation
-    lower: true, // user@gmail.com & User@gmail.com //modification
-  },
-  displayPicture: {
-    type: String,
-    default: "default.png",
-  },
-  password: {
-    type: String,
-    required: true,
-    minLength: 8,
-    select: false, //security
-  },
-  tags: {
-    type: [String],
-    default: [],
-  },
-  passwordChangedAt: Date,
-  passwordResetToken: String,
-  passwordResetTokenExpiresAt: Date,
-});
+  {
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+  }
+);
+
 
 //model instance method -> this method will be available for all the documents created by this model
 userSchema.methods.passwordVerification = async (password, hasedPassword) => {
@@ -86,6 +98,38 @@ userSchema.pre("save", async function (next) {
   this.password = encryptedPassword;
   next();
 });
+
+// // Check if tag is unique before saving tags
+// userSchema.pre("updateOne", async function (next) {
+//   //this -> document
+//   console.log("in save middle")
+//   this.model.findById(this._id).then(user=>console.log(user))
+//   if (!this.isModified("tags")) return next();
+  
+//   // var encryptedPassword = await bcrypt.hash(this.password, 12); //number brute force attack
+//   // this.password = encryptedPassword;
+//   next();
+// });
+
+//virtual populate
+userSchema.virtual("socialLinks", {
+  ref: "Link",
+  foreignField: "userId", //referencing -> populate
+  localField: "_id", //referencing -> populate
+});
+
+userSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "socialLinks",
+  });
+  next();
+});
+
+userSchema.methods.toggleDirect = function () {
+  this.direct = !this.direct;
+  this.save();
+  return this;
+};
 
 var User = new mongoose.model("User", userSchema);
 module.exports = User;

@@ -30,13 +30,7 @@ exports.signup = async (req, res) => {
     //encryption
     var user = await User.create(req.body); //bson
     //profile creation
-    var profile = {
-      username: user.username,
-      email: user.email,
-      name: user.name,
-      id: user._id,
-    };
-    createAndSendToken(profile, res);
+    createAndSendToken(user, res);
   } catch (error) {
     res.status(404).json({
       status: "error",

@@ -6,6 +6,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const authRouter = require("./routes/authRouter");
 const profileRouter = require("./routes/profileRouter");
+const linkRouter = require("./routes/linkRouter");
 const morgan = require("morgan");
 
 const limiter = rateLimit({
@@ -20,7 +21,7 @@ const app = express();
 app.use(cors({ origin: true, credentials: true }));
 //serving static content
 app.use(express.static("public"));
-app.use('/uploads', express.static('uploads'));
+app.use("/uploads", express.static("uploads"));
 
 //middlewares
 app.use(limiter);
@@ -35,5 +36,6 @@ app.use(morgan("dev"));
 // app.use("/api/v1/arts", artRouter);
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/profile", profileRouter);
+app.use("/api/v1/link", linkRouter);
 
 module.exports = app;
