@@ -11,6 +11,7 @@ const {
   attachTagToUser,
   detachTagFromUser,
   getUserByUsername,
+  userScanned,
 } = require("../controllers/profileController");
 const upload = require("../middleware/upload");
 
@@ -27,5 +28,6 @@ router.patch("/toggle-direct", protect, toggleDirect);
 router.get("/tag/:serial", getUserFromTagSerial);
 router.post("/tag/:serial", protect, attachTagToUser);
 router.delete("/tag/:serial", protect, detachTagFromUser);
+router.get("/scanned/:serial", userScanned);
 
 module.exports = router;

@@ -162,3 +162,22 @@ exports.getUserByUsername = async (req, res) => {
     });
   }
 };
+
+exports.userScanned = async (req, res) => {
+  try {
+    let { serial } = req.params;
+
+    let user = await User.findOneAndUpdate(
+      { tags: serial },
+      { $inc: { scanCount: 1 } },
+      { new: true }
+    );
+
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(404).json({
+      status: "error",
+      error: error.message,
+    });
+  }
+};
