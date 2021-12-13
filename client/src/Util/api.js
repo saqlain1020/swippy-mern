@@ -2,7 +2,7 @@ import axios from "axios";
 
 const appApiUrl =
   process.env.NODE_ENV === "production"
-    ? "https://swippy-mern.herokuapp.com"
+    ? "https://swippy-mern.herokuapp.com/api/v1"
     : "http://localhost:5000/api/v1";
 // const appApiUrl = "http://192.168.1.109:5000/api";
 
