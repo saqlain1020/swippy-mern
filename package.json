@@ -12,6 +12,7 @@
     "axios": "^0.24.0",
     "bcryptjs": "^2.4.3",
     "clsx": "^1.1.1",
+    "cross-env": "^7.0.3",
     "crypto": "^1.0.1",
     "express": "^4.17.1",
     "firebase": "^8.5.0",
@@ -41,7 +42,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "cross-env BUILD_PATH='./server/public' react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
