@@ -9,6 +9,7 @@ import firebase from "src/Firebase/Firebase";
 import sizeof from "firestore-size";
 import { shapeUrl } from "src/Util/socialFunctions";
 import { generateVCFUrl } from "./../../Util/socialFunctions";
+import { apiCall } from "../../Util/api";
 
 export const setUser = (user) => {
   return {
@@ -47,27 +48,23 @@ export const getTaggedUserData = async (username) => {
     console.log(error);
   }
 };
-export const getUserData = async (uid) => {
+export const getUserData = async (_id) => {
   try {
-    let query = await firestore.collection("users").doc(uid).get();
-    let displayPhoto = await getProfilePhoto(uid);
-    let data = query.data();
-    console.log(data);
-    console.log(sizeof(data));
-    data.displayPhoto = displayPhoto;
+    let { data } = await apiCall.get("/profile/" + _id);
+    let { pic } = await apiCall.get("/profile/image/" + _id);
+    data.displayPhoto = pic;
     return data;
   } catch (error) {
     console.log(error);
   }
 };
 
-export const signin = (email, pass) => async (dispatch) => {
+export const signin = (email, password) => async (dispatch) => {
   try {
-    let user = await auth.signInWithEmailAndPassword(email, pass);
-    let {
-      user: { uid },
-    } = user;
-    dispatch(setUser(await getUserData(uid)));
+    let { data } = await apiCall.post("/auth/login", { email, password });
+    console.log(data);
+    localStorage.setItem("token", data.token);
+    dispatch(setUser(data.user));
   } catch (error) {
     dispatch(notify(error.message, "error"));
   }
@@ -113,21 +110,19 @@ export const signup = (username, email, pass) => async (dispatch) => {
 
 export const authListener = () => async (dispatch) => {
   try {
-    auth.onAuthStateChanged(async (user) => {
-      if (user) {
-        dispatch(setUser(await getUserData(user.uid)));
-      } else {
-        dispatch(setUser(null));
-      }
-    });
+    let { data } = await apiCall.get("/auth");
+    console.log(data);
+    dispatch(setUser(data));
   } catch (error) {
+    dispatch(setUser(null));
     dispatch(notify(error.message, "error"));
   }
 };
 
 export const signout = () => async (dispatch) => {
   try {
-    await auth.signOut();
+    localStorage.removeItem("token");
+    dispatch(setUser(null));
     history.push("/auth");
   } catch (error) {
     dispatch(notify(error.message, "error"));
@@ -136,11 +131,8 @@ export const signout = () => async (dispatch) => {
 
 export const updateUserInfo = (obj) => async (dispatch) => {
   try {
-    await firestore
-      .collection("users")
-      .doc(store.getState().user.uid)
-      .update(obj);
-    dispatch(updateUser(obj));
+    let { data } = await apiCall.patch("/profile", obj);
+    dispatch(updateUser(data));
     dispatch(notify("Profile updated", "success"));
   } catch (error) {
     dispatch(notify(error.message, "error"));
@@ -176,7 +168,7 @@ export const addSocial = (obj) => async (dispatch) => {
     if (contactCard && !url) url = generateVCFUrl(contactCard);
     else url = shapeUrl(icon, url);
 
-    console.log(url)
+    console.log(url);
 
     let dbObj = null;
     if (icon === "contactcard")

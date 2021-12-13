@@ -79,7 +79,7 @@ const TagSerial = ({
   const [loading, setLoading] = React.useState(true);
 
   const pageChange = () => {
-    if (!currentUser.uid) {
+    if (!currentUser._id) {
       //Show Register text
       setPage(0);
     } else {
@@ -104,7 +104,7 @@ const TagSerial = ({
   };
 
   const handlePair = async () => {
-    await pairTag(serial, currentUser.uid);
+    await pairTag(serial, currentUser._id);
     setPage(4); //Pair complete
   };
 

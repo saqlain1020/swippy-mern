@@ -82,7 +82,7 @@ const Auth = ({ user }) => {
   const classes = useStyles();
 
   React.useEffect(() => {
-    if (user.uid) history.push("/dashboard/profile");
+    if (user._id) history.push("/dashboard/profile");
   }, [user]);
 
   return (

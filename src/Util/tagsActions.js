@@ -38,7 +38,7 @@ export const fetchTagUser = (tagSerial) => async (dispatch) => {
   }
 };
 
-export const pairTag = (serial, uid) => async (dispatch) => {
+export const pairTag = (serial, _id) => async (dispatch) => {
   try {
     //Valid tags check
     // let allValidTags = await getAllValidTags();
@@ -49,7 +49,7 @@ export const pairTag = (serial, uid) => async (dispatch) => {
     // }
     await firestore
       .collection("users")
-      .doc(uid)
+      .doc(_id)
       .update({ tags: firebase.firestore.FieldValue.arrayUnion(serial) });
     let arr = store.getState().user.tags || [];
     arr.push(serial);
