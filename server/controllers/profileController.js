@@ -149,3 +149,16 @@ exports.detachTagFromUser = async (req, res) => {
     });
   }
 };
+
+exports.getUserByUsername = async (req, res) => {
+  try {
+    let { username } = req.params;
+    let user = await User.findOne({ username: username });
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(404).json({
+      status: "error",
+      error: error.message,
+    });
+  }
+};

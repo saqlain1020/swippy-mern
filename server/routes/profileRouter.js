@@ -9,7 +9,8 @@ const {
   getUserDataFromId,
   getUserFromTagSerial,
   attachTagToUser,
-  detachTagFromUser
+  detachTagFromUser,
+  getUserByUsername,
 } = require("../controllers/profileController");
 const upload = require("../middleware/upload");
 
@@ -18,6 +19,7 @@ const router = Router();
 //Update user profile
 router.patch("/", protect, updateUser);
 router.get("/:userId", getUserDataFromId);
+router.get("/username/:username", getUserByUsername);
 router.post("/image", protect, upload.single("profile-image"), uploadImage);
 router.get("/image", protect, getProfileImageUrl);
 router.get("/image/:userId", getProfileImageUrlUserId);

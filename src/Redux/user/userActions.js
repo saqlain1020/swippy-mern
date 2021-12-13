@@ -31,18 +31,9 @@ export const updateUser = (user) => {
 
 export const getTaggedUserData = async (username) => {
   try {
-    let data = {};
-    let query = await firestore
-      .collection("users")
-      .where("username", "==", username)
-      .limit(1)
-      .get();
-    query.forEach((doc) => {
-      data = doc.data();
-    });
-    let displayPhoto = await getProfilePhoto(data.uid);
-    console.log(sizeof(data));
-    data.displayPhoto = displayPhoto;
+    let { data } = await apiCall.get("/profile/username/" + username);
+    let { pic } = await apiCall.get("/profile/image/" + data._id);
+    data.displayPhoto = pic;
     return data;
   } catch (error) {
     console.log(error);
@@ -62,7 +53,6 @@ export const getUserData = async (_id) => {
 export const signin = (email, password) => async (dispatch) => {
   try {
     let { data } = await apiCall.post("/auth/login", { email, password });
-    console.log(data);
     localStorage.setItem("token", data.token);
     dispatch(setUser(data.user));
   } catch (error) {
@@ -71,38 +61,29 @@ export const signin = (email, password) => async (dispatch) => {
 };
 
 const isUsernameExists = async (username) => {
-  let query = await firestore
-    .collection("users")
-    .where("username", "==", username)
-    .limit(1)
-    .get();
-  let flag = false;
-  //True if user exists and false if not
-  query.forEach((doc) => {
-    if (doc.exists) flag = true;
-  });
-  return flag;
+  try {
+    let { data } = await apiCall.get(
+      "auth/check-username?username=" + username
+    );
+    return data.isAvailable;
+  } catch (error) {
+    throw error;
+  }
 };
 
-export const signup = (username, email, pass) => async (dispatch) => {
+export const signup = (username, email, password) => async (dispatch) => {
   try {
     if (await isUsernameExists(username)) {
-      throw { message: "Username taken, try another username" };
+      dispatch(notify("Username taken, try another username", "error"));
+      return;
     }
-    let user = await auth.createUserWithEmailAndPassword(email, pass);
-    let {
-      user: { uid },
-    } = user;
-    let obj = {
-      uid,
-      email,
+    let { data } = await apiCall.post("/auth/signup", {
       username,
-      name: username,
-      scanCount: 0,
-      createdAt: serverTimestamp,
-    };
-    await firestore.collection("users").doc(uid).set(obj);
-    dispatch(setUser(await getUserData(uid)));
+      email,
+      password,
+    });
+    localStorage.setItem("token", data.token);
+    dispatch(setUser(data.user));
   } catch (error) {
     dispatch(notify(error.message, "error"));
   }
@@ -139,11 +120,10 @@ export const updateUserInfo = (obj) => async (dispatch) => {
   }
 };
 
-export const getProfilePhoto = async (uid) => {
+export const getProfilePhoto = async (_id) => {
   try {
-    let ref = storage.child(`/users/images/${uid}.png`);
-    let url = await ref.getDownloadURL();
-    return url;
+    let { pic } = await apiCall.get("/profile/image/" + _id);
+    return pic;
   } catch (error) {
     console.log(error);
     return null;
@@ -152,10 +132,13 @@ export const getProfilePhoto = async (uid) => {
 
 export const uploadProfileImage = (file) => async (dispatch) => {
   try {
-    let ref = storage.child(`/users/images/${store.getState().user.uid}.png`);
-    await ref.put(file);
-    let url = await ref.getDownloadURL();
-    dispatch(updateUser({ displayPhoto: url }));
+    const formData = new FormData();
+    formData.append("profile-image", file);
+    await apiCall.post("/profile/image", formData, {
+      headers: formData.getHeaders(),
+    });
+    let { pic } = await apiCall.get("/profile/image");
+    dispatch(updateUser({ displayPhoto: pic }));
     dispatch(notify("Display Image updated", "success"));
   } catch (error) {
     dispatch(notify(error.message, "error"));
@@ -184,15 +167,12 @@ export const addSocial = (obj) => async (dispatch) => {
         icon,
       };
     console.log(dbObj);
-    await firestore
-      .collection("users")
-      .doc(store.getState().user.uid)
-      .update({
-        socialLinks: firebase.firestore.FieldValue.arrayUnion(dbObj),
-      });
+
+    let { data } = await apiCall.post("/link", dbObj);
+
     //Update local state
     let arr = store.getState().user.socialLinks || [];
-    arr.push(dbObj);
+    arr.push(data);
     await dispatch(
       updateUser({
         socialLinks: arr,
