@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const appApiUrl = "http://localhost:8000/api/v1";
+const appApiUrl = "http://localhost:5000/api/v1";
 // const appApiUrl = "http://192.168.1.109:5000/api";
 
 export const apiCall = axios.create({
