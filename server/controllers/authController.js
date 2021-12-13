@@ -2,6 +2,7 @@ const User = require("../models/userModel");
 const JWT = require("jsonwebtoken");
 const crypto = require("crypto");
 const { promisify } = require("util");
+const { calcProfileImageUrl } = require("../utility/commonFunctions");
 
 const signJWT = (userId) => {
   return JWT.sign({ id: userId }, process.env.JWT_WEB_SECRET, {
@@ -30,6 +31,7 @@ exports.signup = async (req, res) => {
     //encryption
     var user = await User.create(req.body); //bson
     //profile creation
+    user = { ...user, displayPhoto: calcProfileImageUrl(req, user._id) };
     createAndSendToken(user, res);
   } catch (error) {
     res.status(404).json({
@@ -71,7 +73,13 @@ exports.login = async (req, res) => {
     }
 
     // bson to json
+
     let { password: p, ...profile } = user.toJSON();
+
+    profile = {
+      ...profile,
+      displayPhoto: calcProfileImageUrl(req, profile._id),
+    };
     createAndSendToken(profile, res);
   } catch (error) {
     res.status(404).json({
@@ -123,7 +131,7 @@ exports.protect = async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
-     res.status(404).json({
+    res.status(404).json({
       status: "error",
       error: error.message,
     });
@@ -132,9 +140,13 @@ exports.protect = async (req, res, next) => {
 
 exports.getUser = async (req, res) => {
   try {
-    res.status(200).json(req.user);
+    user = {
+      ...req.user.toJSON(),
+      displayPhoto: calcProfileImageUrl(req, req.user._id),
+    };
+    res.status(200).json(user);
   } catch (error) {
-     res.status(404).json({
+    res.status(404).json({
       status: "error",
       error: error.message,
     });
@@ -151,7 +163,7 @@ exports.checkUsernameExist = async (req, res) => {
       isAvailable: user ? false : true,
     });
   } catch (error) {
-     res.status(404).json({
+    res.status(404).json({
       status: "error",
       error: error.message,
     });

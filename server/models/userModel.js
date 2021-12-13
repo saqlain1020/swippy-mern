@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
+const fs = require('fs')
 
 const userSchema = new mongoose.Schema(
   {
@@ -26,7 +27,7 @@ const userSchema = new mongoose.Schema(
       required: true, //TODO: check email pattern //validation
       lower: true, // user@gmail.com & User@gmail.com //modification
     },
-    displayPicture: {
+    displayPhoto: {
       type: String,
     },
     direct: {

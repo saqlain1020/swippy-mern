@@ -104,7 +104,7 @@ const TagSerial = ({
   };
 
   const handlePair = async () => {
-    await pairTag(serial, currentUser._id);
+    await pairTag(serial);
     setPage(4); //Pair complete
   };
 

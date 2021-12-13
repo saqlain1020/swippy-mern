@@ -1,10 +1,12 @@
 const User = require("../models/userModel");
+const { calcProfileImageUrl } = require("../utility/commonFunctions");
 
 //update mongo user object
 exports.updateUser = async (req, res) => {
   try {
     let user = req.user;
     let userData = req.body;
+    userData = { ...userData, displayPhoto: calcProfileImageUrl(req) };
     console.log(userData, user._id);
     var updatedUser = await User.findOneAndUpdate({ _id: user._id }, userData, {
       new: true, //return new updated data
@@ -23,6 +25,7 @@ exports.getUserDataFromId = async (req, res) => {
   try {
     let { userId } = req.params;
     var user = await User.findById(userId);
+    user = { ...user, displayPhoto: calcProfileImageUrl(req, userId) };
     res.status(200).json(user);
   } catch (error) {
     res.status(404).json({
@@ -34,10 +37,7 @@ exports.getUserDataFromId = async (req, res) => {
 
 exports.uploadImage = (req, res) => {
   try {
-    console.log(req.file);
-    var fullUrl = req.protocol + "://" + req.get("host");
-    console.log(fullUrl);
-    res.status(200).json({});
+    res.status(200).json(calcProfileImageUrl(req));
   } catch (error) {
     res.status(404).json({
       status: "error",
@@ -48,12 +48,7 @@ exports.uploadImage = (req, res) => {
 
 exports.getProfileImageUrl = (req, res) => {
   try {
-    var fullUrl = req.protocol + "://" + req.get("host");
-    console.log(
-      fullUrl + "/uploads/profile-pictures/" + req.user._id.toString()
-    );
-    let url = fullUrl + "/uploads/profile-pictures/" + req.user._id.toString();
-    res.status(200).json(url);
+    res.status(200).json(calcProfileImageUrl(req));
   } catch (error) {
     res.status(404).json({
       status: "error",
@@ -64,13 +59,7 @@ exports.getProfileImageUrl = (req, res) => {
 
 exports.getProfileImageUrlUserId = (req, res) => {
   try {
-    var fullUrl = req.protocol + "://" + req.get("host");
-    console.log(
-      fullUrl + "/uploads/profile-pictures/" + req.params.userId.toString()
-    );
-    let url =
-      fullUrl + "/uploads/profile-pictures/" + req.params.userId.toString();
-    res.status(200).json(url);
+    res.status(200).json(calcProfileImageUrl(req, req.params.userId));
   } catch (error) {
     res.status(404).json({
       status: "error",
@@ -97,6 +86,7 @@ exports.getUserFromTagSerial = async (req, res) => {
   try {
     let { serial } = req.params;
     let user = await User.findOne({ tags: serial });
+    user = { ...user, displayPhoto: calcProfileImageUrl(req, user._id) };
     res.status(200).json(user);
   } catch (error) {
     res.status(404).json({
@@ -117,6 +107,10 @@ exports.attachTagToUser = async (req, res) => {
         { $addToSet: { tags: serial } },
         { new: true }
       );
+      response = {
+        ...response,
+        displayPhoto: calcProfileImageUrl(req, response._id),
+      };
       res.status(200).json(response);
     } else {
       res.status(500).json({
@@ -136,11 +130,15 @@ exports.detachTagFromUser = async (req, res) => {
   try {
     let { serial } = req.params;
     let user = req.user;
-    let rsponse = await User.findOneAndUpdate(
+    let response = await User.findOneAndUpdate(
       { _id: user._id },
       { $pull: { tags: serial } },
       { new: true }
     );
+    response = {
+      ...response,
+      displayPhoto: calcProfileImageUrl(req, response._id),
+    };
     res.status(200).json(rsponse);
   } catch (error) {
     res.status(404).json({
@@ -154,6 +152,7 @@ exports.getUserByUsername = async (req, res) => {
   try {
     let { username } = req.params;
     let user = await User.findOne({ username: username });
+    user = { ...user, displayPhoto: calcProfileImageUrl(req, user._id) };
     res.status(200).json(user);
   } catch (error) {
     res.status(404).json({
@@ -172,7 +171,7 @@ exports.userScanned = async (req, res) => {
       { $inc: { scanCount: 1 } },
       { new: true }
     );
-
+    user = { ...user, displayPhoto: calcProfileImageUrl(req, user._id) };
     res.status(200).json(user);
   } catch (error) {
     res.status(404).json({

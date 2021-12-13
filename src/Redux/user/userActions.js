@@ -56,7 +56,11 @@ export const signin = (email, password) => async (dispatch) => {
     localStorage.setItem("token", data.token);
     dispatch(setUser(data.user));
   } catch (error) {
-    dispatch(notify(error.message, "error"));
+    let errorMessage =
+      "Error " + error?.response
+        ? error?.response?.data?.error
+        : "Error while logging in, Try Again!";
+    dispatch(notify(errorMessage, "error"));
   }
 };
 
@@ -85,18 +89,28 @@ export const signup = (username, email, password) => async (dispatch) => {
     localStorage.setItem("token", data.token);
     dispatch(setUser(data.user));
   } catch (error) {
-    dispatch(notify(error.message, "error"));
+    let errorMessage =
+      "Error " + error?.response
+        ? error?.response?.data?.error
+        : "Error while logging in, Try Again!";
+    dispatch(notify(errorMessage, "error"));
   }
 };
 
 export const authListener = () => async (dispatch) => {
   try {
-    let { data } = await apiCall.get("/auth");
-    console.log(data);
-    dispatch(setUser(data));
+    if (localStorage.getItem("token")) {
+      let { data } = await apiCall.get("/auth");
+      console.log(data);
+      dispatch(setUser(data));
+    }
   } catch (error) {
     dispatch(setUser(null));
-    dispatch(notify(error.message, "error"));
+    let errorMessage =
+      "Error " + error?.response
+        ? error?.response?.data?.error
+        : "Error while logging in, Try Again!";
+    dispatch(notify(errorMessage, "error"));
   }
 };
 
@@ -104,9 +118,14 @@ export const signout = () => async (dispatch) => {
   try {
     localStorage.removeItem("token");
     dispatch(setUser(null));
-    history.push("/auth");
+    window.location = "/auth";
+    // history.push("/auth");
   } catch (error) {
-    dispatch(notify(error.message, "error"));
+    let errorMessage =
+      "Error " + error?.response
+        ? error?.response?.data?.error
+        : "Error while logging in, Try Again!";
+    dispatch(notify(errorMessage, "error"));
   }
 };
 
@@ -116,7 +135,11 @@ export const updateUserInfo = (obj) => async (dispatch) => {
     dispatch(updateUser(data));
     dispatch(notify("Profile updated", "success"));
   } catch (error) {
-    dispatch(notify(error.message, "error"));
+    let errorMessage =
+      "Error " + error?.response
+        ? error?.response?.data?.error
+        : "Error while logging in, Try Again!";
+    dispatch(notify(errorMessage, "error"));
   }
 };
 
@@ -132,16 +155,25 @@ export const getProfilePhoto = async (_id) => {
 
 export const uploadProfileImage = (file) => async (dispatch) => {
   try {
+    console.log(file);
     const formData = new FormData();
     formData.append("profile-image", file);
-    await apiCall.post("/profile/image", formData, {
-      headers: formData.getHeaders(),
+    formData.append("profile", "asfg");
+    console.log(formData);
+    let {data:url} = await apiCall.post("/profile/image", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
     });
-    let { pic } = await apiCall.get("/profile/image");
-    dispatch(updateUser({ displayPhoto: pic }));
+    
+    dispatch(updateUser({ displayPhoto: url }));
     dispatch(notify("Display Image updated", "success"));
   } catch (error) {
-    dispatch(notify(error.message, "error"));
+    let errorMessage =
+      "Error " + error?.response
+        ? error?.response?.data?.error
+        : "Error while logging in, Try Again!";
+    dispatch(notify(errorMessage, "error"));
   }
 };
 
@@ -180,7 +212,11 @@ export const addSocial = (obj) => async (dispatch) => {
     );
     dispatch(notify("Social Link added...", "success"));
   } catch (error) {
-    dispatch(notify(error.message, "error"));
+    let errorMessage =
+      "Error " + error?.response
+        ? error?.response?.data?.error
+        : "Error while logging in, Try Again!";
+    dispatch(notify(errorMessage, "error"));
   }
 };
 
@@ -200,7 +236,11 @@ export const updateSocials = (obj) => async (dispatch) => {
     dispatch(updateUser({ socialLinks: arr }));
     dispatch(notify("Social Link updated...", "success"));
   } catch (error) {
-    dispatch(notify(error.message, "error"));
+    let errorMessage =
+      "Error " + error?.response
+        ? error?.response?.data?.error
+        : "Error while logging in, Try Again!";
+    dispatch(notify(errorMessage, "error"));
   }
 };
 
@@ -213,7 +253,11 @@ export const deleteSocial = (_id) => async (dispatch) => {
     dispatch(updateUser({ socialLinks: arr }));
     dispatch(notify("Social Link deleted...", "success"));
   } catch (error) {
-    dispatch(notify(error.message, "error"));
+    let errorMessage =
+      "Error " + error?.response
+        ? error?.response?.data?.error
+        : "Error while logging in, Try Again!";
+    dispatch(notify(errorMessage, "error"));
   }
 };
 
@@ -222,7 +266,11 @@ export const changeDirect = () => async (dispatch) => {
     let { data } = await apiCall.patch("/profile/toggle-direct");
     dispatch(setUser(data));
   } catch (error) {
-    dispatch(notify(error.message, "error"));
+    let errorMessage =
+      "Error " + error?.response
+        ? error?.response?.data?.error
+        : "Error while logging in, Try Again!";
+    dispatch(notify(errorMessage, "error"));
   }
 };
 
@@ -231,7 +279,11 @@ export const sendPasswordResetEmail = (email) => async (dispatch) => {
     await auth.sendPasswordResetEmail(email);
     dispatch(notify("Password reset email sent..", "success"));
   } catch (error) {
-    dispatch(notify(error.message, "error"));
+    let errorMessage =
+      "Error " + error?.response
+        ? error?.response?.data?.error
+        : "Error while logging in, Try Again!";
+    dispatch(notify(errorMessage, "error"));
   }
 };
 
@@ -240,7 +292,11 @@ export const changePrimary = (_id) => async (dispatch) => {
     let { data } = await apiCall.patch("/link/make-primary/" + _id);
     dispatch(setUser(data));
   } catch (error) {
-    dispatch(notify(error.message, "error"));
+    let errorMessage =
+      "Error " + error?.response
+        ? error?.response?.data?.error
+        : "Error while logging in, Try Again!";
+    dispatch(notify(errorMessage, "error"));
   }
 };
 
@@ -249,6 +305,10 @@ export const deleteTag = (serial) => async (dispatch) => {
     let { data } = await apiCall.delete("/profile/tag/" + serial);
     dispatch(setUser(data));
   } catch (error) {
-    dispatch(notify(error.message, "error"));
+    let errorMessage =
+      "Error " + error?.response
+        ? error?.response?.data?.error
+        : "Error while logging in, Try Again!";
+    dispatch(notify(errorMessage, "error"));
   }
 };
