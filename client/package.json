@@ -42,7 +42,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "cross-env BUILD_PATH='../public' react-scripts build",
+    "build": "cross-env BUILD_PATH='../public' CI=false react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
