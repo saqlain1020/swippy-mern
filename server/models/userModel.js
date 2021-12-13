@@ -28,7 +28,6 @@ const userSchema = new mongoose.Schema(
     },
     displayPicture: {
       type: String,
-      default: "default.png",
     },
     direct: {
       type: Boolean,
@@ -54,7 +53,6 @@ const userSchema = new mongoose.Schema(
     toObject: { virtuals: true },
   }
 );
-
 
 //model instance method -> this method will be available for all the documents created by this model
 userSchema.methods.passwordVerification = async (password, hasedPassword) => {
@@ -105,7 +103,7 @@ userSchema.pre("save", async function (next) {
 //   console.log("in save middle")
 //   this.model.findById(this._id).then(user=>console.log(user))
 //   if (!this.isModified("tags")) return next();
-  
+
 //   // var encryptedPassword = await bcrypt.hash(this.password, 12); //number brute force attack
 //   // this.password = encryptedPassword;
 //   next();
