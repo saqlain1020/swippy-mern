@@ -38,4 +38,8 @@ app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/profile", profileRouter);
 app.use("/api/v1/link", linkRouter);
 
+app.use((req, res, next) => {
+  res.sendFile(__dirname + "/public/" + "index.html");
+});
+
 module.exports = app;
