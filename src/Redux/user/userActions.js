@@ -184,24 +184,19 @@ export const addSocial = (obj) => async (dispatch) => {
   }
 };
 
-export const updateSocials = (obj, index) => async (dispatch) => {
+export const updateSocials = (obj) => async (dispatch) => {
   try {
+    let link = await apiCall.patch("/link/" + obj._id, obj);
     let arr = store.getState().user.socialLinks;
-    console.log(obj, index);
-    arr = arr.map((item, ind) => {
-      if (ind === index) {
+    arr = arr.map((item) => {
+      if (obj._id === item._id) {
         return {
           ...item,
-          ...obj,
+          ...link,
         };
       }
       return item;
     });
-    await firestore
-      .collection("users")
-      .doc(store.getState().user.uid)
-      .update({ socialLinks: arr });
-
     dispatch(updateUser({ socialLinks: arr }));
     dispatch(notify("Social Link updated...", "success"));
   } catch (error) {
@@ -209,14 +204,11 @@ export const updateSocials = (obj, index) => async (dispatch) => {
   }
 };
 
-export const deleteSocial = (index) => async (dispatch) => {
+export const deleteSocial = (_id) => async (dispatch) => {
   try {
+    let link = await apiCall.delete("/link/" + _id);
     let arr = store.getState().user.socialLinks;
-    arr = arr.filter((item, ind) => ind !== index);
-    await firestore
-      .collection("users")
-      .doc(store.getState().user.uid)
-      .update({ socialLinks: arr });
+    arr = arr.filter((item) => item._id !== link._id);
 
     dispatch(updateUser({ socialLinks: arr }));
     dispatch(notify("Social Link deleted...", "success"));
@@ -227,13 +219,8 @@ export const deleteSocial = (index) => async (dispatch) => {
 
 export const changeDirect = () => async (dispatch) => {
   try {
-    let direct = store.getState().user.direct || false;
-    direct = !direct;
-    await firestore
-      .collection("users")
-      .doc(store.getState().user.uid)
-      .update({ direct });
-    dispatch(updateUser({ direct }));
+    let { data } = await apiCall.patch("/profile/toggle-direct");
+    dispatch(setUser(data));
   } catch (error) {
     dispatch(notify(error.message, "error"));
   }
@@ -248,20 +235,10 @@ export const sendPasswordResetEmail = (email) => async (dispatch) => {
   }
 };
 
-export const changePrimary = (index) => async (dispatch) => {
+export const changePrimary = (_id) => async (dispatch) => {
   try {
-    let arr = store.getState().user.socialLinks;
-    arr = arr.map((item, ind) => {
-      if (ind === index) item.isPrimary = true;
-      else item.isPrimary = false;
-      return item;
-    });
-    await firestore
-      .collection("users")
-      .doc(store.getState().user.uid)
-      .update({ socialLinks: arr });
-
-    dispatch(updateUser({ socialLinks: arr }));
+    let { data } = await apiCall.patch("/link/make-primary/" + _id);
+    dispatch(setUser(data));
   } catch (error) {
     dispatch(notify(error.message, "error"));
   }
@@ -269,14 +246,8 @@ export const changePrimary = (index) => async (dispatch) => {
 
 export const deleteTag = (serial) => async (dispatch) => {
   try {
-    let arr = store.getState().user.tags;
-    arr = arr.filter((item) => item !== serial);
-    await firestore
-      .collection("users")
-      .doc(store.getState().user.uid)
-      .update({ tags: arr });
-
-    dispatch(updateUser({ tags: arr }));
+    let { data } = await apiCall.delete("/profile/tag/" + serial);
+    dispatch(setUser(data));
   } catch (error) {
     dispatch(notify(error.message, "error"));
   }

@@ -65,6 +65,7 @@ const AddSocialDialog = ({
   social,
   addSocial,
   updateSocials,
+  _id,
   edit = false,
 }) => {
   const classes = useStyles();
@@ -89,7 +90,7 @@ const AddSocialDialog = ({
 
     if (edit) {
       // update
-      await updateSocials(obj, social.index);
+      await updateSocials({ ...obj, _id });
     } else {
       await addSocial(obj);
     }
@@ -143,7 +144,7 @@ const AddSocialDialog = ({
                     return (
                       <ListSubheader key={uuid()}>{item.text}</ListSubheader>
                     );
-                  else return ;
+                  else return;
                 })}
               </Select>
             </FormControl>

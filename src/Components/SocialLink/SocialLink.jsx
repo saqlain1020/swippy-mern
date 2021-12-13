@@ -65,6 +65,7 @@ const useStyles = makeStyles((theme) => ({
 const SocialLink = ({
   icon,
   title,
+  _id,
   url,
   contactCard,
   isPrimary,
@@ -168,15 +169,12 @@ const SocialLink = ({
   }, []);
 
   const handleDelete = () => {
-    deleteSocial(index);
+    deleteSocial(_id);
   };
 
   return (
     <div className={classes.root}>
-      <a
-        href={url}
-        className={classes.root}
-      >
+      <a href={url} className={classes.root}>
         <img
           width="130px"
           height="130px"
@@ -184,7 +182,7 @@ const SocialLink = ({
           src={src}
           alt="social"
         />
-        {console.log(title,icon)}
+        {console.log(title, icon)}
         <Typography align="center" className={classes.text}>
           {/* Capitalizing first letter */}
           {title ? title : `${icon[0].toUpperCase() + icon.slice(1)}`}
@@ -198,7 +196,7 @@ const SocialLink = ({
             </IconButton>
           )}
           {!isPrimary && (
-            <IconButton size="small" onClick={() => changePrimary(index)}>
+            <IconButton size="small" onClick={() => changePrimary(_id)}>
               <StarBorderIcon />
             </IconButton>
           )}
@@ -215,7 +213,7 @@ const SocialLink = ({
         open={open}
         onClose={() => setOpen(false)}
         edit={true}
-        social={{ icon, title, url, index, contactCard }}
+        social={{ icon, title, url, index, contactCard, _id }}
       />
     </div>
   );
