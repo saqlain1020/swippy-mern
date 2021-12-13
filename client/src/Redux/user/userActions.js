@@ -168,6 +168,7 @@ export const uploadProfileImage = (file) => async (dispatch) => {
     
     dispatch(updateUser({ displayPhoto: url }));
     dispatch(notify("Display Image updated", "success"));
+    window.location.reload(false);
   } catch (error) {
     let errorMessage =
       "Error " + error?.response

@@ -9,5 +9,10 @@ const appApiUrl =
 export const apiCall = axios.create({
   baseURL: appApiUrl,
   timeout: 100000,
-  headers: { Authorization: "Bearer " + localStorage.getItem("token") },
+  // headers: { Authorization: "Bearer " + localStorage.getItem("token") },
+});
+
+apiCall.interceptors.request.use((config) => {
+  config.headers["Authorization"] = "Bearer " + localStorage.getItem("token");
+  return config;
 });

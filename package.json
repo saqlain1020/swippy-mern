@@ -26,6 +26,7 @@
     "start": "node server",
     "build": "cd client && yarn build",
     "install:all": "yarn && cd client && yarn ",
-    "heroku-prebuild": "cd client && yarn install"
+    "heroku-prebuild": "cd client && yarn install",
+    "start-client": "cd client && yarn start"
   }
 }
