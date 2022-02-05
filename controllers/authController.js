@@ -3,7 +3,7 @@ const JWT = require("jsonwebtoken");
 const crypto = require("crypto");
 const { promisify } = require("util");
 const { calcProfileImageUrl } = require("../utility/commonFunctions");
-const sgMail  = require("../utility/sendgrid")
+const sgMail = require("../utility/sendgrid")
 
 const signJWT = (userId) => {
   return JWT.sign({ id: userId }, process.env.JWT_WEB_SECRET, {
@@ -206,38 +206,38 @@ exports.forgotPassword = async (req, res) => {
   }
 };
 
-// exports.resetPassword = async (req, res) => {
-//     try {
-//       //get user on the basis of passwordResetToken
-//       var { token } = req.params;
-//       var { password, passwordConfirm } = req.body;
-//       var encryptedResetToken = crypto
-//         .createHash("sha256")
-//         .update(token)
-//         .digest("hex");
-//       var user = await User.findOne({
-//         passwordResetToken: encryptedResetToken,
-//         passwordResetTokenExpiresAt: { $gt: Date.now() },
-//       });
-//       //if user doesnt exist then send error in response
-//       if (!user) {
-//         return res.status(401).json({
-//           error: "token doesnt exist or has been expired!",
-//         });
-//       }
-//       //set user new password
-//       user.password = password;
-//       user.passwordConfirm = passwordConfirm;
-//       user.passwordResetToken = undefined;
-//       await user.save();
-//       createAndSendToken(user, res);
-//     } catch (error) {
-//       user.passwordResetToken = undefined;
-//       user.passwordResetTokenExpiresAt = undefined;
-//       await user.save({ validateBeforeSave: false });
-//       return res.status(404).json({
-//         status: "error",
-//         error: error.message,
-//       });
-//     }
-//   };
+exports.resetPassword = async (req, res) => {
+  try {
+    //get user on the basis of passwordResetToken
+    var { token } = req.params;
+    var { password, passwordConfirm } = req.body;
+    var encryptedResetToken = crypto
+      .createHash("sha256")
+      .update(token)
+      .digest("hex");
+    var user = await User.findOne({
+      passwordResetToken: encryptedResetToken,
+      passwordResetTokenExpiresAt: { $gt: Date.now() },
+    });
+    //if user doesnt exist then send error in response
+    if (!user) {
+      return res.status(401).json({
+        error: "token doesnt exist or has been expired!",
+      });
+    }
+    //set user new password
+    user.password = password;
+    user.passwordConfirm = passwordConfirm;
+    user.passwordResetToken = undefined;
+    await user.save();
+    createAndSendToken(user, res);
+  } catch (error) {
+    user.passwordResetToken = undefined;
+    user.passwordResetTokenExpiresAt = undefined;
+    await user.save({ validateBeforeSave: false });
+    return res.status(404).json({
+      status: "error",
+      error: error.message,
+    });
+  }
+};

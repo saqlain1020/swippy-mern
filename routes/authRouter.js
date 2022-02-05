@@ -6,6 +6,7 @@ const {
   getUser,
   checkUsernameExist,
   forgotPassword,
+  resetPassword
 } = require("../controllers/authController");
 
 const router = Router();
@@ -17,6 +18,6 @@ router.post("/login", login);
 router.get("/check-username", checkUsernameExist);
 // router.get("/forgot-password", test);
 router.get("/forgot-password", forgotPassword);
-// router.post("/reset-password/:token", resetPassword);
+router.post("/reset-password/:token", resetPassword);
 
 module.exports = router;
