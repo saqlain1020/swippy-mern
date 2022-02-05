@@ -160,12 +160,12 @@ export const uploadProfileImage = (file) => async (dispatch) => {
     formData.append("profile-image", file);
     formData.append("profile", "asfg");
     console.log(formData);
-    let {data:url} = await apiCall.post("/profile/image", formData, {
+    let { data: url } = await apiCall.post("/profile/image", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
     });
-    
+
     dispatch(updateUser({ displayPhoto: url }));
     dispatch(notify("Display Image updated", "success"));
     window.location.reload(false);
@@ -277,7 +277,7 @@ export const changeDirect = () => async (dispatch) => {
 
 export const sendPasswordResetEmail = (email) => async (dispatch) => {
   try {
-    await auth.sendPasswordResetEmail(email);
+    let { data } = await apiCall.get("/auth/forgot-password?email=" + email);
     dispatch(notify("Password reset email sent..", "success"));
   } catch (error) {
     let errorMessage =
