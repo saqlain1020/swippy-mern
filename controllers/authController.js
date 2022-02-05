@@ -190,7 +190,7 @@ exports.forgotPassword = async (req, res) => {
       to: email, // Change to your recipient
       from: process.env.SENDGRID_FROM_MAIL, // Change to your verified sender
       subject: 'Password Reset Email',
-      html: `please click to that link for changing your password, note that the link will expires in 10 min - <a href="http://localhost:3000/${resetToken}">Click Here</a> http://localhost:3000/${resetToken}`,
+      html: `please click to that link for changing your password, note that the link will expires in 10 min - <a href="http://localhost:3000/auth/change-password/${resetToken}">Click Here</a> http://localhost:3000/auth/change-password/${resetToken}`,
     }
     await sgMail.send(msg);
 
