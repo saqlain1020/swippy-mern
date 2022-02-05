@@ -5,6 +5,7 @@
   "author": "Saqlain",
   "license": "MIT",
   "dependencies": {
+    "@sendgrid/mail": "^7.6.0",
     "@supercharge/filesystem": "^2.3.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
@@ -13,6 +14,7 @@
     "express": "^4.17.1",
     "express-mongo-sanitize": "^2.1.0",
     "express-rate-limit": "^5.5.1",
+    "form-data": "^4.0.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.0.12",
     "morgan": "^1.10.0",

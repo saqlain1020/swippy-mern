@@ -3,6 +3,7 @@ const JWT = require("jsonwebtoken");
 const crypto = require("crypto");
 const { promisify } = require("util");
 const { calcProfileImageUrl } = require("../utility/commonFunctions");
+const sgMail  = require("../utility/sendgrid")
 
 const signJWT = (userId) => {
   return JWT.sign({ id: userId }, process.env.JWT_WEB_SECRET, {
@@ -170,38 +171,40 @@ exports.checkUsernameExist = async (req, res) => {
   }
 };
 
-// exports.forgotPassword = async (req, res) => {
-//     try {
-//       var { email } = req.body;
-//       //1 - fetch user on the basis of email
-//       var user = await User.findOne({ email });
-//       if (!user) {
-//         return res.status(404).json({
-//           status: "error",
-//           error: "no user found!",
-//         });
-//       }
-//       //2 - generate reset token
-//       var resetToken = user.passwordResetTokenGenerator();
-//       await user.save({ validateBeforeSave: false }); //saving already existing doc
-//       //3 - send it to user's email
-//       var msg = `please click to that link for changing your password, note that the link will expires in 10 min -  http://localhost:8000/api/v1/auth/reset-password/${resetToken}`;
-//       await sendEmail({
-//         to: email,
-//         subject: "password reset token",
-//         content: msg,
-//       });
-//       res.status(200).json({
-//         status: "success",
-//         msg: "reset token has been sent to the email",
-//       });
-//     } catch (error) {
-//       return res.status(404).json({
-//         status: "error",
-//         error: error.message,
-//       });
-//     }
-//   };
+exports.forgotPassword = async (req, res) => {
+  try {
+    var email = req.query.email.toLowerCase();
+    //1 - fetch user on the basis of email
+    var user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({
+        status: "error",
+        error: "no user found!",
+      });
+    }
+    //2 - generate reset token
+    var resetToken = user.passwordResetTokenGenerator();
+    await user.save({ validateBeforeSave: false }); //saving already existing doc
+    //3 - send it to user's email
+    const msg = {
+      to: email, // Change to your recipient
+      from: process.env.SENDGRID_FROM_MAIL, // Change to your verified sender
+      subject: 'Password Reset Email',
+      html: `please click to that link for changing your password, note that the link will expires in 10 min - <a href="http://localhost:3000/api/v1/auth/reset-password/${resetToken}">Click Here</a> http://localhost:3000/api/v1/auth/reset-password/${resetToken}`,
+    }
+    await sgMail.send(msg);
+
+    res.status(200).json({
+      status: "success",
+      msg: "reset token has been sent to the email",
+    });
+  } catch (error) {
+    return res.status(404).json({
+      status: "error",
+      error: error.message,
+    });
+  }
+};
 
 // exports.resetPassword = async (req, res) => {
 //     try {
