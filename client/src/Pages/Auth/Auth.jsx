@@ -10,6 +10,7 @@ import Bg from "src/Assets/images/black-bg.jpg";
 import { connect } from "react-redux";
 import history from "src/Routes/history";
 import ForgotPassword from "src/Components/ForgotPassword/ForgotPassword";
+import ChangePassword from "src/Components/ChangePassword/ChangePassword";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -94,6 +95,7 @@ const Auth = ({ user }) => {
           <Route path="/auth" component={Login} exact />
           <Route path="/auth/signup" component={Signup} exact />
           <Route path="/auth/forgot-password" component={ForgotPassword} exact />
+          <Route path="/auth/change-password/:resetToken" component={ChangePassword} exact />
         </div>
       </div>
     </div>

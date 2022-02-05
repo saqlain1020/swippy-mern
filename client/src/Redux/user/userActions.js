@@ -10,6 +10,7 @@ import sizeof from "firestore-size";
 import { shapeUrl } from "src/Util/socialFunctions";
 import { generateVCFUrl } from "./../../Util/socialFunctions";
 import { apiCall } from "../../Util/api";
+import { useHistory } from "react-router-dom";
 
 export const setUser = (user) => {
   return {
@@ -314,3 +315,22 @@ export const deleteTag = (serial) => async (dispatch) => {
   }
 };
 
+
+export const changePasswordUsingToken = ({ password, confirmPassword, resetToken }) => async (dispatch) => {
+  const history = useHistory()
+  try {
+    if (password !== confirmPassword) {
+      dispatch(notify("Password not matching..", "error"));
+      return;
+    }
+    await apiCall.post(`/auth/reset-password/${resetToken}`, { password, confirmPassword })
+    dispatch(notify("Password Changed..", "success"));
+    history.push("/auth/login");
+  } catch (error) {
+    let errorMessage =
+      "Error " + error?.response
+        ? error?.response?.data?.error
+        : "Error while logging in, Try Again!";
+    dispatch(notify(errorMessage, "error"));
+  }
+};
