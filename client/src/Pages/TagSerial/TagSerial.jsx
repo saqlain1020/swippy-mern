@@ -90,6 +90,7 @@ const TagSerial = ({
 
   const handleTag = async () => {
     let user = await fetchTagUser(serial);
+    console.log(user);
     if (user) {
       let social = user.socialLinks?.find((item) => item.isPrimary);
       if (social && user.direct) window.location.replace(social.url);

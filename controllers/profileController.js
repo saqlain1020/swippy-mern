@@ -25,6 +25,7 @@ exports.getUserDataFromId = async (req, res) => {
   try {
     let { userId } = req.params;
     var user = await User.findById(userId);
+    user = user.toObject()
     user = { ...user, displayPhoto: calcProfileImageUrl(req, userId) };
     res.status(200).json(user);
   } catch (error) {
@@ -86,6 +87,7 @@ exports.getUserFromTagSerial = async (req, res) => {
   try {
     let { serial } = req.params;
     let user = await User.findOne({ tags: serial });
+    user = user.toObject()
     user = { ...user, displayPhoto: calcProfileImageUrl(req, user._id) };
     res.status(200).json(user);
   } catch (error) {
@@ -107,6 +109,7 @@ exports.attachTagToUser = async (req, res) => {
         { $addToSet: { tags: serial } },
         { new: true }
       );
+      response = response.toObject()
       response = {
         ...response,
         displayPhoto: calcProfileImageUrl(req, response._id),
@@ -135,6 +138,7 @@ exports.detachTagFromUser = async (req, res) => {
       { $pull: { tags: serial } },
       { new: true }
     );
+    response = response.toObject()
     response = {
       ...response,
       displayPhoto: calcProfileImageUrl(req, response._id),
@@ -152,6 +156,7 @@ exports.getUserByUsername = async (req, res) => {
   try {
     let { username } = req.params;
     let user = await User.findOne({ username: username });
+    user = user.toObject()
     user = { ...user, displayPhoto: calcProfileImageUrl(req, user._id) };
     res.status(200).json(user);
   } catch (error) {
@@ -171,7 +176,7 @@ exports.userScanned = async (req, res) => {
       { $inc: { scanCount: 1 } },
       { new: true }
     );
-    user = { ...user, displayPhoto: calcProfileImageUrl(req, user._id) };
+    user = { ...user.toObject(), displayPhoto: calcProfileImageUrl(req, user._id) };
     res.status(200).json(user);
   } catch (error) {
     res.status(404).json({

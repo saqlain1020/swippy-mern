@@ -4,6 +4,7 @@ const crypto = require("crypto");
 const { promisify } = require("util");
 const { calcProfileImageUrl } = require("../utility/commonFunctions");
 const sgMail = require("../utility/sendgrid")
+const nodemailer = require("nodemailer")
 
 const signJWT = (userId) => {
   return JWT.sign({ id: userId }, process.env.JWT_WEB_SECRET, {
@@ -192,7 +193,19 @@ exports.forgotPassword = async (req, res) => {
       subject: 'Password Reset Email',
       html: `please click to that link for changing your password, note that the link will expires in 10 min - <a href="http://localhost:3000/auth/change-password/${resetToken}">Click Here</a> http://localhost:3000/auth/change-password/${resetToken}`,
     }
-    await sgMail.send(msg);
+    // await sgMail.send(msg);
+
+    let transporter = nodemailer.createTransport({
+    service: "Gmail",
+      // secure: false, // true for 465, false for other ports
+      auth: {
+        user: process.env.GMAIL_FROM_MAIL, // generated ethereal user
+        pass: process.env.GMAIL_PASS, // generated ethereal password
+      },
+    });
+  
+    // send mail with defined transport object
+    let info = await transporter.sendMail(msg);
 
     res.status(200).json({
       status: "success",

@@ -249,8 +249,8 @@ export const deleteSocial = (_id) => async (dispatch) => {
   try {
     let link = await apiCall.delete("/link/" + _id);
     let arr = store.getState().user.socialLinks;
-    arr = arr.filter((item) => item._id !== link._id);
-
+    arr = arr.filter((item) => item._id !== link.data._id);
+    console.log(arr,link);
     dispatch(updateUser({ socialLinks: arr }));
     dispatch(notify("Social Link deleted...", "success"));
   } catch (error) {

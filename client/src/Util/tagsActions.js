@@ -6,7 +6,7 @@ import { apiCall } from "./api";
 
 export const fetchTagUser = (tagSerial) => async (dispatch) => {
   try {
-    let { data: user } = await apiCall.get("/profile/scanned/", tagSerial);
+    let { data: user } = await apiCall.get("/profile/scanned/"+ tagSerial);
     return user;
   } catch (error) {
     let errorMessage =
