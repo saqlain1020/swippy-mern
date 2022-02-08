@@ -9,11 +9,13 @@ import history from "./history";
 import ProfilePage from "src/Components/ProfilePage/ProfilePage";
 import TagSerial from "src/Pages/TagSerial/TagSerial";
 import TextPage from "src/Pages/TextPage/TextPage";
+import Sitemap from "src/Pages/Sitemap/Sitemap";
 
 const Routes = () => {
   return (
     <Switch>
       <Route path={"/"} render={() => history.push("/auth")} exact />
+      <Route path="/sitemap" component={Sitemap} exact />
       <Route path="/profile/:username" component={ProfilePage} exact />
       <Route path={"/test"} component={Test} />
       <Route path={"/auth"} component={Auth} />
