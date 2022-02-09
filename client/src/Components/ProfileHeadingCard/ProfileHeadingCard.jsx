@@ -78,6 +78,7 @@ const ProfileHeadingCard = ({
                 src={displayPhoto ? displayPhoto : imgPlaceholder}
               />
             )}
+            {console.log(data.displayPhoto)}
             {data && (
               <Avatar
                 className={classes.avatar}

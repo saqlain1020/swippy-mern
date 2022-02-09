@@ -32,7 +32,8 @@ export const updateUser = (user) => {
 export const getTaggedUserData = async (username) => {
   try {
     let { data } = await apiCall.get("/profile/username/" + username);
-    let { pic } = await apiCall.get("/profile/image/" + data._id);
+    let { data:pic} = await apiCall.get("/profile/image/" + data._id);
+    console.log("pic",pic,data._id);
     data.displayPhoto = pic;
     return data;
   } catch (error) {

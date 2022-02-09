@@ -49,6 +49,7 @@ exports.uploadImage = (req, res) => {
 
 exports.getProfileImageUrl = (req, res) => {
   try {
+    console.log(req);
     res.status(200).json(calcProfileImageUrl(req));
   } catch (error) {
     res.status(404).json({
@@ -143,7 +144,7 @@ exports.detachTagFromUser = async (req, res) => {
       ...response,
       displayPhoto: calcProfileImageUrl(req, response._id),
     };
-    res.status(200).json(rsponse);
+    res.status(200).json(response);
   } catch (error) {
     res.status(404).json({
       status: "error",
@@ -177,7 +178,11 @@ exports.userScanned = async (req, res) => {
       { new: true }
     );
     user = { ...user.toObject(), displayPhoto: calcProfileImageUrl(req, user._id) };
-    res.status(200).json(user);
+    res.status(200).json(user)
+    // user? 
+    // res.status(200).json(user)
+    // :
+    // res.status(404).json(null)
   } catch (error) {
     res.status(404).json({
       status: "error",

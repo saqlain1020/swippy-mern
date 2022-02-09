@@ -115,6 +115,7 @@ const ProfilePage = ({
       type: LOADER_START,
     });
     let data = await getTaggedUserData(username);
+    console.log("dt",data);
     setData(data);
     dispatch({
       type: LOADER_STOP,

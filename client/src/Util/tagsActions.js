@@ -7,13 +7,15 @@ import { apiCall } from "./api";
 export const fetchTagUser = (tagSerial) => async (dispatch) => {
   try {
     let { data: user } = await apiCall.get("/profile/scanned/"+ tagSerial);
+    console.log(user);
     return user;
   } catch (error) {
     let errorMessage =
       "Error " + error?.response
         ? error?.response?.data?.error
         : "Error while logging in, Try Again!";
-    dispatch(notify(errorMessage, "error"));
+    // dispatch(notify(errorMessage, "error"));
+    return null
   }
 };
 
