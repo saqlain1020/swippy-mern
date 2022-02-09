@@ -223,6 +223,7 @@ export const addSocial = (obj) => async (dispatch) => {
 
 export const updateSocials = (obj) => async (dispatch) => {
   try {
+    console.log(obj);
     let link = await apiCall.patch("/link/" + obj._id, obj);
     let arr = store.getState().user.socialLinks;
     arr = arr.map((item) => {

@@ -90,7 +90,7 @@ const AddSocialDialog = ({
 
     if (edit) {
       // update
-      await updateSocials({ ...obj, _id });
+      await updateSocials({ ...obj,_id:social?._id  });
     } else {
       await addSocial(obj);
     }

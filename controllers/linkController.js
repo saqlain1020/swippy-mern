@@ -35,7 +35,8 @@ exports.updateLink = async (req, res) => {
     let user = req.user;
     let { linkId } = req.params;
     let data = req.body;
-    console.log(data);
+    
+    console.log("in upd",data,linkId);
     let link = await Link.findOneAndUpdate(
       { userId: user._id, _id: linkId },
       data,
